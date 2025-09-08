@@ -8,12 +8,13 @@ import org.springframework.data.domain.Pageable;
 import com.example.R.DBodega_ProAPI.dtos.categoria.CategoriaGuardar;
 import com.example.R.DBodega_ProAPI.dtos.categoria.CategoriaModificar;
 import com.example.R.DBodega_ProAPI.dtos.categoria.CategoriaSalida;
+import com.example.R.DBodega_ProAPI.modelos.Categoria;
 
 public interface ICategoriaService {
 
     List<CategoriaSalida> obtenerTodos();
 
-    Page<CategoriaSalida> obtenerTodosPaginados(String nombre, Pageable pageable);
+    Page<CategoriaSalida> obtenerTodosPaginados(Pageable pageable);
 
     CategoriaSalida obtenerPorId(Integer id);
 
@@ -22,5 +23,7 @@ public interface ICategoriaService {
     CategoriaSalida editar(CategoriaModificar categoriaModificar);
 
     void eliminarPorId(Integer id);
+
+    Page<Categoria> findByNombreContainingIgnoreCaseOrderByIdDesc(String nombre, Pageable pageable);
 
 }

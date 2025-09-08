@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.R.DBodega_ProAPI.dtos.categoria.CategoriaGuardar;
@@ -29,11 +28,8 @@ public class CategoriaController {
     private ICategoriaService categoriaService;
 
      @GetMapping
-    public ResponseEntity<Page<CategoriaSalida>> mostrarTodosPaginados(
-        @RequestParam(required = false) String nombre, Pageable pageable) {
-       
-        Page<CategoriaSalida> categorias = categoriaService.obtenerTodosPaginados(nombre, pageable);
-
+    public ResponseEntity<Page<CategoriaSalida>> mostrarTodosPaginados(Pageable pageable){
+        Page<CategoriaSalida> categorias = categoriaService.obtenerTodosPaginados(pageable);
         if(categorias.hasContent()){
             return ResponseEntity.ok(categorias);
         }
