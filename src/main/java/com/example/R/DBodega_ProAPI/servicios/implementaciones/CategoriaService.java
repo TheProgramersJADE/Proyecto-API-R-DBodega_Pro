@@ -35,8 +35,16 @@ public class CategoriaService implements ICategoriaService{
     }
 
     @Override
-    public Page<CategoriaSalida> obtenerTodosPaginados(Pageable pageable) {
-        Page<Categoria> page = categoriaRepository.findAll(pageable);
+    public Page<CategoriaSalida> obtenerTodosPaginados(String nombre, Pageable pageable) {
+        Page<Categoria> page;
+
+        if (nombre != null && !nombre.isBlank()) {
+            // Usa el filtro por nombre
+            page = categoriaRepository.findByNombreContainingIgnoreCaseOrderByIdDesc(nombre, pageable);
+        } else {
+            // Devuelve todos paginados
+            page = categoriaRepository.findAll(pageable);
+        }
 
         List<CategoriaSalida> categoriasDto = page.stream()
                 .map(categoria -> modelMapper.map(categoria, CategoriaSalida.class))
@@ -44,6 +52,7 @@ public class CategoriaService implements ICategoriaService{
 
         return new PageImpl<>(categoriasDto, page.getPageable(), page.getTotalElements());
     }
+
 
     @Override
     public CategoriaSalida obtenerPorId(Integer id) {
@@ -65,11 +74,6 @@ public class CategoriaService implements ICategoriaService{
     @Override
     public void eliminarPorId(Integer id) {
         categoriaRepository.deleteById(id);
-    }
-
-    @Override
-    public Page<Categoria> findByNombreContainingIgnoreCaseOrderByIdDesc(String nombre, Pageable pageable) {
-        return categoriaRepository.findByNombreContainingIgnoreCaseOrderByIdDesc(nombre, pageable);
     }
 
 }
