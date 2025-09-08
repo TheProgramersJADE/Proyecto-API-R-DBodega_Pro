@@ -30,6 +30,15 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+	<!--DEPENDENCIAS ADICIONALES-->
+	<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+	<!--FIN DE DEPENDENCIAS ADICIONALES-->
+
+	<!--DEPENDENCIAS AGREGADAS EN LA CREACIÓN DEL PROYECTO-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -55,6 +64,8 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+			<!-- FIN DE LAS DEPENDENCIAS AGREGADAS EN LA CREACIÓN DEL PROYECTO-->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
