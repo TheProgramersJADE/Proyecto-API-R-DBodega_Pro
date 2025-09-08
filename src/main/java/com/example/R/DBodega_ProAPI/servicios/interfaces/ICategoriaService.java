@@ -24,6 +24,6 @@ public interface ICategoriaService {
 
     void eliminarPorId(Integer id);
 
-    Page<Categoria> findByNombreContainingIgnoreCaseOrderByIdAsc(String nombre, Pageable pageable);
+    Page<Categoria> findByNombreContainingIgnoreCaseOrderByIdDesc(String nombre, Pageable pageable);
 
 }
