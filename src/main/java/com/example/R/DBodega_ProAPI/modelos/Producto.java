@@ -2,13 +2,14 @@ package com.example.R.DBodega_ProAPI.modelos;
 
 import java.math.BigDecimal;
 
-import org.springframework.data.annotation.Id;
-
+import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.ForeignKey;
 import jakarta.validation.constraints.DecimalMin;
@@ -70,13 +71,14 @@ public class Producto {
     @Column(name = "imagen_url")
     private String imagen_url;
 
-    @NotNull(message = "Debe seleccionar una categoría")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_categoria", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_productos_categoria"))
+                foreignKey = @ForeignKey(name = "producto_ibfk_categoria"))
     private Categoria categoria;
 
-    @JoinColumn(name = "id_proveedor",
-            foreignKey = @ForeignKey(name = "fk_productos_proveedor"))
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_proveedor", nullable = false,
+                foreignKey = @ForeignKey(name = "producto_ibfk_proveedor"))
     private Proveedor proveedor;
 
     // --- ENUM para el estado del stock ---
