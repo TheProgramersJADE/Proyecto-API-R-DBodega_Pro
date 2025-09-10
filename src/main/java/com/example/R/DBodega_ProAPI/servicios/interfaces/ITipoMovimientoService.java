@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoGuardar;
 import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoModificar;
 import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoSalida;
 import com.example.R.DBodega_ProAPI.modelos.TipoMovimiento;
@@ -15,7 +16,7 @@ public interface ITipoMovimientoService {
 
     TipoMovimientoSalida obtenerPorId(Integer id);
 
-    TipoMovimientoSalida crear(TipoMovimientoSalida tipoMovimientoSalida);
+    TipoMovimientoSalida crear(TipoMovimientoGuardar tipoMovimientoGuardar);
 
     TipoMovimientoSalida editar(TipoMovimientoModificar tipoMovimientoModificar);
 

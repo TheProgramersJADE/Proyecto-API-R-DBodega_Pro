@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoGuardar;
 import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoModificar;
 import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoSalida;
 import com.example.R.DBodega_ProAPI.modelos.TipoMovimiento;
@@ -49,12 +51,6 @@ public class TipoMovimientoService implements ITipoMovimientoService {
     }
 
     @Override
-    public TipoMovimientoSalida crear(TipoMovimientoSalida tipoMovimientoSalida) {
-        TipoMovimiento tipoMovimiento = tipoMovimientoRepository.save(modelMapper.map(tipoMovimientoSalida, TipoMovimiento.class));
-        return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
-    }
-
-    @Override
     public TipoMovimientoSalida editar(TipoMovimientoModificar tipoMovimientoModificar) {
         TipoMovimiento tipoMovimiento = tipoMovimientoRepository.save(modelMapper.map(tipoMovimientoModificar, TipoMovimiento.class));
         return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
@@ -74,5 +70,11 @@ public class TipoMovimientoService implements ITipoMovimientoService {
     @Override
     public Optional<TipoMovimiento> findByNombre(String nombre) {
         return tipoMovimientoRepository.findByNombre(nombre);
+    }
+
+    @Override
+    public TipoMovimientoSalida crear(TipoMovimientoGuardar tipoMovimientoGuardar) {
+        TipoMovimiento tipoMovimiento = tipoMovimientoRepository.save(modelMapper.map(tipoMovimientoGuardar, TipoMovimiento.class));
+        return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
     }
 }
