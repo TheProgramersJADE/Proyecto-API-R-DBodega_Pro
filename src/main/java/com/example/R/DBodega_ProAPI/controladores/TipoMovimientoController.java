@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoGuardar;
 import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoModificar;
 import com.example.R.DBodega_ProAPI.dtos.tipoMovimiento.TipoMovimientoSalida;
+import com.example.R.DBodega_ProAPI.modelos.TipoMovimiento;
 import com.example.R.DBodega_ProAPI.servicios.interfaces.ITipoMovimientoService;
 
 @RestController
@@ -32,6 +34,12 @@ public class TipoMovimientoController {
             return ResponseEntity.ok(tiposMovimientos);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<TipoMovimiento>> buscarPorNombre(
+            @RequestParam String nombre, Pageable pageable) {
+        return ResponseEntity.ok(tipoMovimientoService.findByNombreContainingIgnoreCaseOrderByIdDesc(nombre, pageable));
     }
 
     @GetMapping("/lista")
@@ -54,19 +62,21 @@ public class TipoMovimientoController {
 
     // Métodos POST, PUT y DELETE pueden ser añadidos aquí si es necesario
     @PostMapping
-    public ResponseEntity<TipoMovimientoSalida> crear(@RequestBody TipoMovimientoGuardar tipoMovimientoGuardar){
+    public ResponseEntity<TipoMovimientoSalida> crear(@RequestBody TipoMovimientoGuardar tipoMovimientoGuardar) {
         TipoMovimientoSalida tiposMovimientos = tipoMovimientoService.crear(tipoMovimientoGuardar);
         return ResponseEntity.ok(tiposMovimientos);
     }
 
-      @PutMapping("/{id}")
-    public ResponseEntity<TipoMovimientoSalida> editar(@PathVariable Integer id, @RequestBody TipoMovimientoModificar tipoMovimientoModificar){
+    @PutMapping("/{id}")
+    public ResponseEntity<TipoMovimientoSalida> editar(@PathVariable Integer id,
+            @RequestBody TipoMovimientoModificar tipoMovimientoModificar) {
+        tipoMovimientoModificar.setId(id);
         TipoMovimientoSalida tiposMovimientos = tipoMovimientoService.editar(tipoMovimientoModificar);
         return ResponseEntity.ok(tiposMovimientos);
     }
 
-      @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable Integer id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminar(@PathVariable Integer id) {
         tipoMovimientoService.eliminarPorId(id);
         return ResponseEntity.ok("Tipo Movimiento eliminado correctamente");
     }

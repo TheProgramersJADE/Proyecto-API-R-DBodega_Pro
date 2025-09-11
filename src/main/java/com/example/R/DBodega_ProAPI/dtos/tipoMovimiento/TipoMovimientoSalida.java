@@ -9,6 +9,6 @@ import lombok.Setter;
 public class TipoMovimientoSalida implements Serializable{
     private Integer id;
     private String nombre;
-    private String editarCosto;
-    private String tipo;
+    private Boolean editarCosto;
+    private Integer tipo;
 }

@@ -25,7 +25,13 @@ public class TipoMovimientoService implements ITipoMovimientoService {
 
     @Autowired
     private ModelMapper modelMapper;
-    
+
+    private void validarTipo(Integer tipo) {
+        if (tipo == null || (tipo < 1 || tipo > 3)) {
+            throw new IllegalArgumentException("El tipo debe ser 1 (Entrada), 2 (Salida) o 3 (Ajuste Especial)");
+        }
+    }
+
     @Override
     public List<TipoMovimientoSalida> obtenerTodos() {
         List<TipoMovimiento> tiposMovimiento = tipoMovimientoRepository.findAll();
@@ -47,13 +53,38 @@ public class TipoMovimientoService implements ITipoMovimientoService {
 
     @Override
     public TipoMovimientoSalida obtenerPorId(Integer id) {
-        return modelMapper.map(tipoMovimientoRepository.findById(id).get(), TipoMovimientoSalida.class);
+        TipoMovimiento tipoMovimiento = tipoMovimientoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se encontró el tipo de movimiento con ID " + id));
+        return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
     }
 
     @Override
     public TipoMovimientoSalida editar(TipoMovimientoModificar tipoMovimientoModificar) {
-        TipoMovimiento tipoMovimiento = tipoMovimientoRepository.save(modelMapper.map(tipoMovimientoModificar, TipoMovimiento.class));
+        validarTipo(tipoMovimientoModificar.getTipo());
+
+        // Mapear DTO a entidad
+        TipoMovimiento tipoMovimiento = modelMapper.map(tipoMovimientoModificar, TipoMovimiento.class);
+
+        // Aplicar reglas de negocio para editarCosto
+        if (tipoMovimiento.getTipo() == 1) {
+            tipoMovimiento.setEditarCosto(tipoMovimientoModificar.getEditarCosto() != null
+                    ? tipoMovimientoModificar.getEditarCosto()
+                    : false);
+        } else if (tipoMovimiento.getTipo() == 2) {
+            tipoMovimiento.setEditarCosto(false);
+        } else if (tipoMovimiento.getTipo() == 3) {
+            tipoMovimiento.setEditarCosto(tipoMovimientoModificar.getEditarCosto() != null
+                    ? tipoMovimientoModificar.getEditarCosto()
+                    : false);
+        }
+
+        // Guardar en BD
+        tipoMovimiento = tipoMovimientoRepository.save(tipoMovimiento);
         return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
+
+        // TipoMovimiento tipoMovimiento = tipoMovimientoRepository
+        // .save(modelMapper.map(tipoMovimientoModificar, TipoMovimiento.class));
+        // return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
     }
 
     @Override
@@ -74,7 +105,30 @@ public class TipoMovimientoService implements ITipoMovimientoService {
 
     @Override
     public TipoMovimientoSalida crear(TipoMovimientoGuardar tipoMovimientoGuardar) {
-        TipoMovimiento tipoMovimiento = tipoMovimientoRepository.save(modelMapper.map(tipoMovimientoGuardar, TipoMovimiento.class));
+        validarTipo(tipoMovimientoGuardar.getTipo());
+
+        // Mapear DTO a entidad
+        TipoMovimiento tipoMovimiento = modelMapper.map(tipoMovimientoGuardar, TipoMovimiento.class);
+
+        // Aplicar reglas de negocio para editarCosto
+        if (tipoMovimiento.getTipo() == 1) {
+            tipoMovimiento.setEditarCosto(tipoMovimientoGuardar.getEditarCosto() != null
+                    ? tipoMovimientoGuardar.getEditarCosto()
+                    : false);
+        } else if (tipoMovimiento.getTipo() == 2) {
+            tipoMovimiento.setEditarCosto(false);
+        } else if (tipoMovimiento.getTipo() == 3) {
+            tipoMovimiento.setEditarCosto(tipoMovimientoGuardar.getEditarCosto() != null
+                    ? tipoMovimientoGuardar.getEditarCosto()
+                    : false);
+        }
+
+        // Guardar en BD
+        tipoMovimiento = tipoMovimientoRepository.save(tipoMovimiento);
         return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
+
+        // TipoMovimiento tipoMovimiento = tipoMovimientoRepository
+        // .save(modelMapper.map(tipoMovimientoGuardar, TipoMovimiento.class));
+        // return modelMapper.map(tipoMovimiento, TipoMovimientoSalida.class);
     }
 }
