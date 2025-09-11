@@ -1,7 +1,6 @@
 package com.example.R.DBodega_ProAPI.modelos;
 
 import java.math.BigDecimal;
-
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,17 +26,17 @@ import lombok.Setter;
 @Table(name = "productos")
 public class Producto {
 
-  @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 100)
-    @Column( name = "nombre", nullable = false, length = 100)
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
     @Size(max = 255)
-    @Column( name = "descripcion", length = 255)
+    @Column(name = "descripcion", length = 255)
     private String descripcion;
 
     @NotNull(message = "El precio de compra es obligatorio")
@@ -72,13 +71,11 @@ public class Producto {
     private String imagen_url;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_categoria", nullable = false,
-                foreignKey = @ForeignKey(name = "producto_ibfk_categoria"))
+    @JoinColumn(name = "id_categoria", nullable = false, foreignKey = @ForeignKey(name = "producto_ibfk_categoria"))
     private Categoria categoria;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_proveedor", nullable = false,
-                foreignKey = @ForeignKey(name = "producto_ibfk_proveedor"))
+    @JoinColumn(name = "id_proveedor", nullable = false, foreignKey = @ForeignKey(name = "producto_ibfk_proveedor"))
     private Proveedor proveedor;
 
     // --- ENUM para el estado del stock ---
@@ -110,8 +107,7 @@ public class Producto {
         }
     }
 
-
-    //  método para calcular estado según stock
+    // método para calcular estado según stock
     public EstadoStock getEstadoStock() {
         if (this.stock_actual <= 0) {
             return EstadoStock.AGOTADO;
