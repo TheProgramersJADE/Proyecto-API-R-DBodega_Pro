@@ -70,11 +70,13 @@ public class Producto {
     @Column(name = "imagen_url")
     private String imagen_url;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull(message = "Debe seleccionar una categoría")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoria", nullable = false, foreignKey = @ForeignKey(name = "producto_ibfk_categoria"))
     private Categoria categoria;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull(message = "Debe seleccionar una categoría")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_proveedor", nullable = false, foreignKey = @ForeignKey(name = "producto_ibfk_proveedor"))
     private Proveedor proveedor;
 
@@ -83,28 +85,6 @@ public class Producto {
         AGOTADO,
         TERMINANDO,
         BUENO
-    }
-
-    // Devuelve el texto del estado del stock
-    public String getEstadoStockText() {
-        if (this.getEstadoStock() == EstadoStock.AGOTADO) {
-            return "Agotado";
-        } else if (this.getEstadoStock() == EstadoStock.TERMINANDO) {
-            return "Terminando";
-        } else {
-            return "Disponible"; // BUENO
-        }
-    }
-
-    // Devuelve una clase CSS según el estado
-    public String getEstadoStockClass() {
-        if (this.getEstadoStock() == EstadoStock.AGOTADO) {
-            return "badge bg-danger";
-        } else if (this.getEstadoStock() == EstadoStock.TERMINANDO) {
-            return "badge bg-warning text-dark";
-        } else {
-            return "badge bg-success"; // BUENO
-        }
     }
 
     // método para calcular estado según stock
@@ -117,5 +97,7 @@ public class Producto {
             return EstadoStock.BUENO;
         }
     }
+
+
 
 }
