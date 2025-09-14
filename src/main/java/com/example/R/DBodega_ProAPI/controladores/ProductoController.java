@@ -21,9 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.R.DBodega_ProAPI.dtos.producto.ProductoGuardar;
 import com.example.R.DBodega_ProAPI.dtos.producto.ProductoModificar;
 import com.example.R.DBodega_ProAPI.dtos.producto.ProductoSalida;
-import com.example.R.DBodega_ProAPI.servicios.implementaciones.ServicioArchivos;
+// import com.example.R.DBodega_ProAPI.servicios.implementaciones.ServicioArchivos;
 import com.example.R.DBodega_ProAPI.servicios.interfaces.IProductoService;
-import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -34,8 +33,8 @@ public class ProductoController {
 
     private final Path uploadDir = Paths.get("src/main/resources/static/uploads");
     
-    @Autowired
-    private ServicioArchivos servicioArchivos;
+    // @Autowired
+    // private ServicioArchivos servicioArchivos;
 
     @GetMapping
     public ResponseEntity<Page<ProductoSalida>> mostrarTodosPaginados(Pageable pageable) {
