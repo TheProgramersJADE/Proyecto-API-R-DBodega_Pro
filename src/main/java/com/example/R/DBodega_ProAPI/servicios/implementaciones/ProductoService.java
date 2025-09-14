@@ -39,7 +39,7 @@ public class ProductoService implements IProductoService {
     public List<ProductoSalida> obtenerTodos() {
         List<Producto> productos = productoRepository.findAll();
         return productos.stream()
-                .map(producto -> modelMapper.map(producto, ProductoSalida.class))
+                .map(this::mapearAProductoSalida)
                 .collect(Collectors.toList());
     }
 
@@ -55,16 +55,23 @@ public class ProductoService implements IProductoService {
 
     @Override
     public ProductoSalida obtenerPorId(Integer id) {
-        return modelMapper.map(productoRepository.findById(id).get(), ProductoSalida.class);
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        return mapearAProductoSalida(producto);
     }
-
 
     @Override
     public ProductoSalida crear(ProductoGuardar dto) {
-        // Mapear datos simples
-        Producto producto = modelMapper.map(dto, Producto.class);
+        Producto producto = new Producto();
+        producto.setNombre(dto.getNombre());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setPrecio_compra(dto.getPrecio_compra());
+        producto.setPrecio_venta(dto.getPrecio_venta());
+        producto.setCosto_promedio(dto.getCosto_promedio());
+        producto.setStock_actual(dto.getStock_actual());
+        producto.setStock_minimo(dto.getStock_minimo());
+        producto.setImagen_url(dto.getImagen_url());
 
-        // Setear relaciones
         Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         producto.setCategoria(categoria);
@@ -73,10 +80,9 @@ public class ProductoService implements IProductoService {
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
         producto.setProveedor(proveedor);
 
-        // Guardar en BD
         producto = productoRepository.save(producto);
 
-        return modelMapper.map(producto, ProductoSalida.class);
+        return mapearAProductoSalida(producto);
     }
     // CODIGO ANTIGUO
     // @Override
@@ -88,19 +94,21 @@ public class ProductoService implements IProductoService {
 
     @Override
     public ProductoSalida editar(ProductoModificar dto) {
-        // Obtener producto actual de la BD
         Producto existente = productoRepository.findById(dto.getId())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // Mapear cambios (excepto imagen si no viene)
-        modelMapper.map(dto, existente);
+        existente.setNombre(dto.getNombre());
+        existente.setDescripcion(dto.getDescripcion());
+        existente.setPrecio_compra(dto.getPrecio_compra());
+        existente.setPrecio_venta(dto.getPrecio_venta());
+        existente.setCosto_promedio(dto.getCosto_promedio());
+        existente.setStock_actual(dto.getStock_actual());
+        existente.setStock_minimo(dto.getStock_minimo());
 
-        // Si en el DTO no viene imagen_url, mantenemos la existente
-        if (dto.getImagen_url() == null || dto.getImagen_url().isEmpty()) {
-            existente.setImagen_url(existente.getImagen_url());
+        if (dto.getImagen_url() != null) {
+            existente.setImagen_url(dto.getImagen_url());
         }
 
-        // Setear relaciones
         Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         existente.setCategoria(categoria);
@@ -111,7 +119,8 @@ public class ProductoService implements IProductoService {
 
         existente = productoRepository.save(existente);
 
-        return modelMapper.map(existente, ProductoSalida.class);
+        return mapearAProductoSalida(existente);
+
     }
     // CODIGO ANTIGUO
     // @Override
@@ -120,7 +129,6 @@ public class ProductoService implements IProductoService {
     // productoRepository.save(modelMapper.map(ProductoModificar, Producto.class));
     // return modelMapper.map(producto, ProductoSalida.class);
     // }
-
 
     @Override
     public void eliminarPorId(Integer id) {
@@ -143,5 +151,32 @@ public class ProductoService implements IProductoService {
     public Optional<Producto> findByNombre(String nombre) {
         return productoRepository.findByNombre(nombre);
     }
+
+
+// --- Método privado para mapear manualmente el estado de stock ---
+    private ProductoSalida mapearAProductoSalida(Producto producto) {
+        ProductoSalida salida = modelMapper.map(producto, ProductoSalida.class);
+
+        // Campos calculados de stock
+        if (producto.getStock_actual() == null || producto.getStock_actual() <= 0) {
+            salida.setEstadoStock("Agotado");
+            salida.setEstadoStockClass("badge-danger");
+        } else if (producto.getStock_actual() <= producto.getStock_minimo()) {
+            salida.setEstadoStock("Terminando");
+            salida.setEstadoStockClass("badge-warning");
+        } else {
+            salida.setEstadoStock("Disponible");
+            salida.setEstadoStockClass("badge-success");
+        }
+
+        // Mapear relaciones simplificadas
+        salida.setIdCategoria(producto.getCategoria().getId());
+        salida.setNombreCategoria(producto.getCategoria().getNombre());
+        salida.setIdProveedor(producto.getProveedor().getId());
+        salida.setNombreProveedor(producto.getProveedor().getNombre());
+
+        return salida;
+    }
+
 
 }

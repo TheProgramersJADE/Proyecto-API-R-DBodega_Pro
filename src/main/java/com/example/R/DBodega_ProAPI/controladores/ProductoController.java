@@ -1,6 +1,9 @@
 package com.example.R.DBodega_ProAPI.controladores;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +32,8 @@ public class ProductoController {
     @Autowired
     private IProductoService productoService;
 
+    private final Path uploadDir = Paths.get("src/main/resources/static/uploads");
+    
     @Autowired
     private ServicioArchivos servicioArchivos;
 
@@ -60,19 +65,22 @@ public class ProductoController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductoSalida> crear(
-            @RequestPart("producto") ProductoGuardar dto,
+   // -------------------- CREAR --------------------
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<ProductoSalida> crearProducto(
+            @RequestPart("producto") ProductoGuardar productoDto,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) throws IOException {
 
+        // Guardar imagen si existe
         if (imagen != null && !imagen.isEmpty()) {
-            // Guardar en disco
-            String ruta = servicioArchivos.guardarImagen(imagen);
-            dto.setImagen_url(ruta);
+            if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
+            Path filePath = uploadDir.resolve(imagen.getOriginalFilename());
+            Files.copy(imagen.getInputStream(), filePath);
+            productoDto.setImagen_url("/uploads/" + imagen.getOriginalFilename());
         }
 
-        ProductoSalida producto = productoService.crear(dto);
-        return ResponseEntity.ok(producto);
+        ProductoSalida creado = productoService.crear(productoDto);
+        return ResponseEntity.ok(creado);
     }
     // CODIGO ANTIGUO
     // public ResponseEntity<ProductoSalida> crear(@RequestBody ProductoGuardar
@@ -82,24 +90,23 @@ public class ProductoController {
     // }
 
 
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductoSalida> editar(
-            @PathVariable Integer id,
-            @RequestPart("producto") ProductoModificar dto,
+    @PutMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<ProductoSalida> editarProducto(
+            @RequestPart("producto") ProductoModificar productoDto,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) throws IOException {
 
+        // Guardar imagen si existe
         if (imagen != null && !imagen.isEmpty()) {
-            // Primero eliminar imagen anterior
-            servicioArchivos.eliminarImagenExistente(id);
-
-            // Guardar nueva imagen
-            String ruta = servicioArchivos.guardarImagen(imagen);
-            dto.setImagen_url(ruta);
+            if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
+            Path filePath = uploadDir.resolve(imagen.getOriginalFilename());
+            Files.copy(imagen.getInputStream(), filePath);
+            productoDto.setImagen_url("/uploads/" + imagen.getOriginalFilename());
         }
 
-        ProductoSalida producto = productoService.editar(dto);
-        return ResponseEntity.ok(producto);
+        ProductoSalida editado = productoService.editar(productoDto);
+        return ResponseEntity.ok(editado);
     }
+
     // CODIGO ANTIGUO
     // @PutMapping("/{id}")
     // public ResponseEntity<ProductoSalida> editar(@PathVariable Integer id,
@@ -109,6 +116,19 @@ public class ProductoController {
     // }
 
     
+     // -------------------- OBTENER TODOS --------------------
+    @GetMapping
+    public ResponseEntity<?> obtenerTodos(Pageable pageable) {
+        return ResponseEntity.ok(productoService.obtenerTodosPaginados(pageable));
+    }
+
+    // -------------------- OBTENER POR ID --------------------
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductoSalida> obtenerPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(productoService.obtenerPorId(id));
+    }
+
+    // -------------------- ELIMINAR --------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminar(@PathVariable Integer id) {
         productoService.eliminarPorId(id);
