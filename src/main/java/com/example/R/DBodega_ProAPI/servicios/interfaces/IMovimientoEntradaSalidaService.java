@@ -20,7 +20,7 @@ public interface IMovimientoEntradaSalidaService {
 
     MovimientoEntradaSalidaSalida editar(MovimientoEntradaSalidaModificar movimientoEntradaSalidaModificar);
 
-    Page<MovimientoEntradaSalidaSalida> findByProductoNombreContainingIgnoreCaseAndTipoMovimientoNombreOrderByIdDesc(
+    Page<MovimientoEntradaSalida> findByProductoNombreContainingIgnoreCaseAndTipoMovimientoNombreOrderByIdDesc(
             String nombreProducto, String nombre, Pageable pageable);
 
     List<MovimientoEntradaSalida> findByFechaBetween(LocalDateTime inicio, LocalDateTime fin);

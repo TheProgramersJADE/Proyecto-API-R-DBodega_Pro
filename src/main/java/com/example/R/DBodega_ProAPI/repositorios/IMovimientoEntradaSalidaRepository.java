@@ -2,8 +2,8 @@ package com.example.R.DBodega_ProAPI.repositorios;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springdoc.core.converters.models.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.R.DBodega_ProAPI.modelos.MovimientoEntradaSalida;
 
