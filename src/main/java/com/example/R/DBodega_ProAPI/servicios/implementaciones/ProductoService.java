@@ -43,7 +43,7 @@ public class ProductoService implements IProductoService {
      @Autowired
     private ModelMapper modelMapper;
 
-        private final Path rutaUploads = Paths.get("src/main/resources/static/uploads");
+private final Path rutaUploads = Paths.get("uploads"); // carpeta en la raíz del proyecto
 
      @Override
      public List<ProductoSalida> obtenerTodos() {
@@ -76,6 +76,7 @@ public class ProductoService implements IProductoService {
         producto.setCategoria(buscarCategoriaPorNombre(productoGuardar.getCategoria_nombre()));
         producto.setProveedor(buscarProveedorPorNombre(productoGuardar.getProveedor_nombre()));
 
+            // En crear()
         if (imagen != null && !imagen.isEmpty()) {
             String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
             Files.createDirectories(rutaUploads);
@@ -105,18 +106,20 @@ public class ProductoService implements IProductoService {
         producto.setProveedor(buscarProveedorPorNombre(productoModificar.getProveedor_nombre()));
 
         // Actualizar imagen solo si se envía una nueva
-        if (imagen != null && !imagen.isEmpty()) {
-            // Borrar imagen anterior si existe
-            if (producto.getImagen_url() != null) {
-                Path rutaAnterior = Paths.get("src/main/resources/static", producto.getImagen_url());
-                Files.deleteIfExists(rutaAnterior);
+             // En editar()
+            if (imagen != null && !imagen.isEmpty()) {
+                // Borrar la anterior si existe
+                if (producto.getImagen_url() != null) {
+                    Path rutaAnterior = Paths.get("uploads", Paths.get(producto.getImagen_url()).getFileName().toString());
+                    Files.deleteIfExists(rutaAnterior);
+                }
+                // Guardar nueva imagen
+                String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
+                Files.createDirectories(rutaUploads);
+                Path rutaArchivo = rutaUploads.resolve(nombreArchivo);
+                Files.copy(imagen.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+                producto.setImagen_url("/uploads/" + nombreArchivo);
             }
-            String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-            Files.createDirectories(rutaUploads);
-            Path rutaArchivo = rutaUploads.resolve(nombreArchivo);
-            Files.copy(imagen.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
-            producto.setImagen_url("/uploads/" + nombreArchivo);
-        }
 
         producto = productoRepository.save(producto);
         return modelMapper.map(producto, ProductoSalida.class);
