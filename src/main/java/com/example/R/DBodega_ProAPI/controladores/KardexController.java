@@ -13,17 +13,22 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.R.DBodega_ProAPI.dtos.kardex.KardexMovimiento;
 import com.example.R.DBodega_ProAPI.servicios.interfaces.IKardexService;
 
-
 @RestController
 @RequestMapping("/api/kardex")
 public class KardexController {
 
-   @Autowired
+    @Autowired
     private IKardexService kardexService;
 
     @GetMapping("/{productoId}")
     public ResponseEntity<List<KardexMovimiento>> obtenerKardex(@PathVariable Integer productoId) {
         List<KardexMovimiento> kardex = kardexService.obtenerKardexPorProducto(productoId);
+        return ResponseEntity.ok(kardex);
+    }
+
+    @GetMapping("/todos")
+    public ResponseEntity<List<KardexMovimiento>> obtenerTodosKardex() {
+        List<KardexMovimiento> kardex = kardexService.obtenerTodosKardex();
         return ResponseEntity.ok(kardex);
     }
 
