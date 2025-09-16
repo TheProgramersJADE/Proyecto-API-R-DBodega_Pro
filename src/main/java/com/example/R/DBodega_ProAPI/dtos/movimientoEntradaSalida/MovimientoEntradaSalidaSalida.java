@@ -11,7 +11,9 @@ import lombok.Setter;
 public class MovimientoEntradaSalidaSalida implements Serializable {
     private Integer id;
     private Integer idProducto;
+    private String productoNombre;
     private Integer idTipoMovimiento;
+    private String tipoMovimientoNombre;
     private Integer cantidad;
     private BigDecimal precio;
     private String usuario;

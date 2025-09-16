@@ -64,8 +64,10 @@ public class MovimientoEntradaSalidaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MovimientoEntradaSalidaSalida> editar(@PathVariable Integer id,
-            @RequestBody MovimientoEntradaSalidaModificar movimientoEntradaSalidaModificar) {
+    public ResponseEntity<MovimientoEntradaSalidaSalida> editar(
+        @PathVariable Integer id,
+        @RequestBody MovimientoEntradaSalidaModificar movimientoEntradaSalidaModificar) {
+                    movimientoEntradaSalidaModificar.setId(id); // si tu servicio necesita saber el id
         MovimientoEntradaSalidaSalida movimientosEntradaSalida = movimientoEntradaSalidaService
                 .editar(movimientoEntradaSalidaModificar);
         return ResponseEntity.ok(movimientosEntradaSalida);
