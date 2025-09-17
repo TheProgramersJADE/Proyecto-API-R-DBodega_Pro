@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.R.DBodega_ProAPI.dtos.movimientoEntradaSalida.MovimientoEntradaSalidaGuardar;
 import com.example.R.DBodega_ProAPI.dtos.movimientoEntradaSalida.MovimientoEntradaSalidaModificar;
@@ -72,6 +73,25 @@ public class MovimientoEntradaSalidaController {
                 .editar(movimientoEntradaSalidaModificar);
         return ResponseEntity.ok(movimientosEntradaSalida);
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<MovimientoEntradaSalidaSalida>> buscar(
+            @RequestParam(defaultValue = "") String nombreProducto,
+            @RequestParam(defaultValue = "") String nombre,
+            Pageable pageable
+    ) {
+        Page<MovimientoEntradaSalidaSalida> resultado =
+                movimientoEntradaSalidaService.findByProductoNombreContainingIgnoreCaseAndTipoMovimientoNombreOrderByIdDesc(
+                        nombreProducto, nombre, pageable);
+
+        if (resultado.hasContent()) {
+            return ResponseEntity.ok(resultado);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 
     // @DeleteMapping("/{id}")
     // public ResponseEntity<String> eliminar(@PathVariable Integer id){

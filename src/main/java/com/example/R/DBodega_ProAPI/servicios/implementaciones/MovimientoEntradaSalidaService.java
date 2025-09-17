@@ -127,12 +127,24 @@ public class MovimientoEntradaSalidaService implements IMovimientoEntradaSalidaS
 
     }*/
 
-    @Override
-    public Page<MovimientoEntradaSalida> findByProductoNombreContainingIgnoreCaseAndTipoMovimientoNombreOrderByIdDesc(
-            String nombreProducto, String nombre, Pageable pageable) {
-       
-                return movimientoEntradaSalidaRepository.findByProductoNombreContainingIgnoreCaseAndTipoMovimientoNombreOrderByIdDesc(nombre, nombreProducto, pageable);
-    }
+  @Override
+public Page<MovimientoEntradaSalidaSalida> findByProductoNombreContainingIgnoreCaseAndTipoMovimientoNombreOrderByIdDesc(
+        String nombreProducto,
+        String nombre,
+        Pageable pageable) {
+
+    // Si viene null lo cambiamos por cadena vacía, para que el repositorio no falle
+    String filtroProducto = (nombreProducto != null) ? nombreProducto : "";
+    String filtroTipo = (nombre != null) ? nombre : "";
+
+    // Llamamos al repositorio con los filtros en el orden correcto
+    return movimientoEntradaSalidaRepository
+            .findByProductoNombreContainingIgnoreCaseAndTipoMovimientoNombreOrderByIdDesc(
+                    filtroProducto, filtroTipo, pageable)
+            // Convertimos cada entidad en su DTO de salida
+            .map(movimiento -> modelMapper.map(movimiento, MovimientoEntradaSalidaSalida.class));
+}
+
 
     @Override
     public List<MovimientoEntradaSalida> findByFechaBetween(LocalDateTime inicio, LocalDateTime fin) {
