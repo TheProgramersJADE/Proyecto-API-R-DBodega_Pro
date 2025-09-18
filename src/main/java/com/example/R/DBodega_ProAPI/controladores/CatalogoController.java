@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ public class CatalogoController {
  @Autowired
     private IProductoService productoService;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_usuario')")
     // Listado de productos para catálogo (JSON)
     @GetMapping
     public ResponseEntity<List<ProductoSalida>> listarCatalogo() {
@@ -29,6 +31,7 @@ public class CatalogoController {
         return ResponseEntity.ok(productos);
     }
 
+        @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_usuario')")
     // Detalle de producto en catálogo (JSON)
     @GetMapping("/{id}")
     public ResponseEntity<ProductoSalida> detalleCatalogo(@PathVariable Integer id) {

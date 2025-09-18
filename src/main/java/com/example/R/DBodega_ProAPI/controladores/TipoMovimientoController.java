@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ public class TipoMovimientoController {
     @Autowired
     private ITipoMovimientoService tipoMovimientoService;
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping
     public ResponseEntity<?> mostrarTodosPaginados(Pageable pageable) {
         try {
@@ -44,6 +46,7 @@ public class TipoMovimientoController {
         }
     }
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping("/buscar")
     public ResponseEntity<?> buscarPorNombre(
             @RequestParam(defaultValue = "") String nombre, Pageable pageable) {
@@ -66,6 +69,7 @@ public class TipoMovimientoController {
         }
     }
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping("/lista")
     public ResponseEntity<?> mostrarTodos() {
         try {
@@ -79,6 +83,7 @@ public class TipoMovimientoController {
         }
     }
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Integer id) {
          if (id == null || id <= 0) {
@@ -96,6 +101,7 @@ public class TipoMovimientoController {
     }
 
     // Métodos POST, PUT y DELETE pueden ser añadidos aquí si es necesario
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody TipoMovimientoGuardar tipoMovimientoGuardar) {
           if (tipoMovimientoGuardar == null || tipoMovimientoGuardar.getNombre() == null
@@ -125,6 +131,7 @@ public class TipoMovimientoController {
         return ResponseEntity.ok(tiposMovimientos);
     }*/
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
      @PutMapping("/{id}")
     public ResponseEntity<?> editar(@PathVariable Integer id,
             @RequestBody TipoMovimientoModificar tipoMovimientoModificar) {
@@ -166,6 +173,7 @@ public class TipoMovimientoController {
         return ResponseEntity.ok(tiposMovimientos);
     }*/
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Integer id) {
 

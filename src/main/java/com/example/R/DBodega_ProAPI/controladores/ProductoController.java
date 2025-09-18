@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class ProductoController {
     private IProductoService productoService;
 
     // 🔹 Paginado
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping
     public ResponseEntity<?> mostrarTodosPaginados(Pageable pageable) {
         try {
@@ -48,6 +50,7 @@ public class ProductoController {
     }
 
     // 🔹 Lista sin paginar
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping("/lista")
     public ResponseEntity<?> mostrarTodos() {
         try {
@@ -62,6 +65,7 @@ public class ProductoController {
         }
     }
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Integer id) {
         if (id == null || id <= 0) {
@@ -80,6 +84,7 @@ public class ProductoController {
     }
 
     // Crear producto con imagen
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<?> crear(
             @RequestParam String nombre,
@@ -149,6 +154,7 @@ public class ProductoController {
     }
 
     // Editar producto con posibilidad de cambiar imagen
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @PutMapping(value = "/{id}", consumes = "multipart/form-data")
     public ResponseEntity<?> editar(
             @PathVariable Integer id,
@@ -231,6 +237,7 @@ public class ProductoController {
     }
 
     // Eliminar producto
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Integer id) {
         if (id == null || id <= 0) {
@@ -252,6 +259,7 @@ public class ProductoController {
         }
     }
 
+            @PreAuthorize("hasAnyAuthority('ROLE_Administrador', 'ROLE_SupervisorBodega')")
     @GetMapping("/buscar")
     public ResponseEntity<?> buscar(
             @RequestParam(defaultValue = "") String nombre,
