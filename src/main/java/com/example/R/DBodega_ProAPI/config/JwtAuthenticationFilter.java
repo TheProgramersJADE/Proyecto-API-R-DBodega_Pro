@@ -31,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     private String audience;
 
     private static final String[] SWAGGER_WHITELIST = {
+            "/estado",
             "/swagger-ui",
             "/swagger-ui/",
             "/swagger-ui.html",
