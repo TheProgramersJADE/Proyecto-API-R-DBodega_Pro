@@ -8,6 +8,6 @@ public class EstadoController {
 
  @GetMapping("/estado")
  public String estadoApi() {
-     return "La api esta funcionando correctamente";
+     return "La api de administracion Spring boot esta funcionando correctamente";
  }   
 }
