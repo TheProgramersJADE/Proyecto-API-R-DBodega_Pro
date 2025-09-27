@@ -48,26 +48,44 @@ private final Path rutaUploads = Paths.get("uploads"); // carpeta en la raíz de
      @Override
      public List<ProductoSalida> obtenerTodos() {
           List<Producto> productos = productoRepository.findAll();
-        return productos.stream()
-                .map(producto -> modelMapper.map(producto, ProductoSalida.class))
-                .collect(Collectors.toList());
-     }
+         return productos.stream()
+            .map(producto -> {
+                ProductoSalida dto = modelMapper.map(producto, ProductoSalida.class);
+                // Mapear categoría/proveedor/estadoStock en DTO
+                if (producto.getCategoria() != null) dto.setCategoriaNombre(producto.getCategoria().getNombre());
+                if (producto.getProveedor() != null) dto.setProveedorNombre(producto.getProveedor().getNombre());
+                dto.setEstadoStock(calculateEstadoStock(producto));
+                return dto;
+            })
+            .collect(Collectors.toList());
+}
 
      @Override
      public Page<ProductoSalida> obtenerTodosPaginados(Pageable pageable) {
            Page<Producto> page = productoRepository.findAll(pageable);
 
         List<ProductoSalida> productoDto = page.stream()
-                .map(producto -> modelMapper.map(producto, ProductoSalida.class))
-                .collect(Collectors.toList());
+            .map(producto -> {
+                ProductoSalida dto = modelMapper.map(producto, ProductoSalida.class);
+                if (producto.getCategoria() != null) dto.setCategoriaNombre(producto.getCategoria().getNombre());
+                if (producto.getProveedor() != null) dto.setProveedorNombre(producto.getProveedor().getNombre());
+                dto.setEstadoStock(calculateEstadoStock(producto));
+                return dto;
+            })
+            .collect(Collectors.toList());
 
         return new PageImpl<>(productoDto, page.getPageable(), page.getTotalElements());
      }
 
      @Override
      public ProductoSalida obtenerPorId(Integer id) {
-         return modelMapper.map(productoRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Producto no encontrado con id: " + id)), ProductoSalida.class);
+         Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+    ProductoSalida dto = modelMapper.map(producto, ProductoSalida.class);
+    if (producto.getCategoria() != null) dto.setCategoriaNombre(producto.getCategoria().getNombre());
+    if (producto.getProveedor() != null) dto.setProveedorNombre(producto.getProveedor().getNombre());
+    dto.setEstadoStock(calculateEstadoStock(producto));
+    return dto;
      }
 
      @Override
@@ -86,7 +104,12 @@ private final Path rutaUploads = Paths.get("uploads"); // carpeta en la raíz de
         }
 
         producto = productoRepository.save(producto);
-        return modelMapper.map(producto, ProductoSalida.class);
+
+         ProductoSalida dto = modelMapper.map(producto, ProductoSalida.class);
+        if (producto.getCategoria() != null) dto.setCategoriaNombre(producto.getCategoria().getNombre());
+        if (producto.getProveedor() != null) dto.setProveedorNombre(producto.getProveedor().getNombre());
+        dto.setEstadoStock(calculateEstadoStock(producto));
+        return dto;
      }
 
      @Override
@@ -109,8 +132,8 @@ private final Path rutaUploads = Paths.get("uploads"); // carpeta en la raíz de
              // En editar()
             if (imagen != null && !imagen.isEmpty()) {
                 // Borrar la anterior si existe
-                if (producto.getImagen_url() != null) {
-                    Path rutaAnterior = Paths.get("uploads", Paths.get(producto.getImagen_url()).getFileName().toString());
+                if (producto.getImagen_url() != null && !producto.getImagen_url().isBlank()) {
+                Path rutaAnterior = rutaUploads.resolve(Paths.get(producto.getImagen_url()).getFileName().toString());
                     Files.deleteIfExists(rutaAnterior);
                 }
                 // Guardar nueva imagen
@@ -122,7 +145,12 @@ private final Path rutaUploads = Paths.get("uploads"); // carpeta en la raíz de
             }
 
         producto = productoRepository.save(producto);
-        return modelMapper.map(producto, ProductoSalida.class);
+
+         ProductoSalida dto = modelMapper.map(producto, ProductoSalida.class);
+        if (producto.getCategoria() != null) dto.setCategoriaNombre(producto.getCategoria().getNombre());
+        if (producto.getProveedor() != null) dto.setProveedorNombre(producto.getProveedor().getNombre());
+        dto.setEstadoStock(calculateEstadoStock(producto));
+        return dto;
      }
 
      @Override
@@ -132,7 +160,7 @@ private final Path rutaUploads = Paths.get("uploads"); // carpeta en la raíz de
         // Borrar imagen si existe
         if (producto.getImagen_url() != null) {
             try {
-                Path rutaArchivo = Paths.get("src/main/resources/static", producto.getImagen_url());
+            Path rutaArchivo = rutaUploads.resolve(Paths.get(producto.getImagen_url()).getFileName().toString());
                 Files.deleteIfExists(rutaArchivo);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -164,13 +192,31 @@ private final Path rutaUploads = Paths.get("uploads"); // carpeta en la raíz de
     }
 
 
-    /*public ProductoSalida actualizarImagen(Integer id, String rutaImagen) {
-    Producto producto = productoRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-    producto.setImagen_url(rutaImagen);
-    producto = productoRepository.save(producto);
-    return modelMapper.map(producto, ProductoSalida.class);
-}*/
+    // ---------------- util: calcular estado stock ----------------
+private String calculateEstadoStock(Producto producto) {
+    if (producto.getStock_actual() == null || producto.getStock_minimo() == null) {
+        return "Desconocido";
+    }
+
+    int stockActual = producto.getStock_actual();
+    int stockMinimo = producto.getStock_minimo();
+
+    // Estado 1: no hay existencias
+    if (stockActual <= 0) {
+        return "AGOTADO";
+    }
+
+    // Calcula un margen de alerta del 10% por encima del mínimo
+    double margenAlerta = stockMinimo * 1.10;
+
+    // Estado 2: aún hay stock, pero ya se acerca al límite mínimo
+    if (stockActual > 0 && stockActual <= margenAlerta) {
+        return "TERMINÁNDOSE";
+    }
+
+    // Estado 3: hay suficiente stock
+    return "DISPONIBLE";
+}
 
 
 }

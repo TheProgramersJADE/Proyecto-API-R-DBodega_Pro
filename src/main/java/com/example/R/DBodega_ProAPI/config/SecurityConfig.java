@@ -23,6 +23,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
+                    "/uploads/**",        // <-- permitir imágenes publicamente
                     "/estado", 
                     "/swagger-ui/**",
                     "/swagger-ui.html",

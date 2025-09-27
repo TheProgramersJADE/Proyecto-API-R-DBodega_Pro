@@ -39,7 +39,7 @@ public class ModelMapperConfig {
     // Mapear estado_stock usando el converter
     modelMapper.typeMap(Producto.class, ProductoSalida.class)
         .addMappings(mapper -> mapper.using(enumToString)
-                                     .map(Producto::getEstadoStock, ProductoSalida::setEstado_stock));
+                                     .map(Producto::getEstadoStock, ProductoSalida::setEstadoStock));
 
 
       // Guardar → Entidad
